@@ -1,7 +1,4 @@
 import math
-from decimal import Decimal as D
-import decimal
-
 
 def euler_to_quaternion(yaw: float, #yaw in radian
                         pitch: float, #yaw in radian
@@ -15,10 +12,10 @@ def euler_to_quaternion(yaw: float, #yaw in radian
     sp = math.sin(yaw/2)
     sr = math.sin(roll/2)
 
-    w = D(cy*cp*cr - sy*sp*sr)
-    x = D(sy*sp*cr + cy*cp*sr)
-    y = D(sy*cp*cr + cy*sp*sr)
-    z = D(cy*sp*cr - sy*cp*sr)
+    w = round(cy*cp*cr - sy*sp*sr, 12)
+    x = round(sy*sp*cr + cy*cp*sr, 12)
+    y = round(sy*cp*cr + cy*sp*sr, 12)
+    z = round(cy*sp*cr - sy*cp*sr, 12)
 
     return w, x, y, z
 
@@ -27,14 +24,14 @@ def quaternion_to_euler(w: float,
                         y: float,
                         z: float):
 
-    if(abs(D(x*y + z*w)) == 0.5):
+    if(abs(round(x*y + z*w, 3)) == 0.5):
         pitch = (2*(x*y + z*w)) * 2 * math.atan2(x, w)
         roll = 0.0
     else:
         pitch = math.atan2(2*y*w - 2*x*z, 1 - 2*y**2 - 2*z**2)
         roll = math.atan2(2*x*w - 2*y*z, 1 - 2*x**2 - 2*z**2)
     
-    yaw = math.asin(D(2*x*y + 2*z*w))
+    yaw = math.asin(round(2*x*y + 2*z*w, 3))
     
     return yaw, pitch, roll
 
@@ -48,9 +45,9 @@ def quaternion_to_rotmat(w: float,
     # 1 - 2*qy2 - 2*qz2	    2*qx*qy - 2*qz*qw	2*qx*qz + 2*qy*qw
     # 2*qx*qy + 2*qz*qw	    1 - 2*qx2 - 2*qz2	2*qy*qz - 2*qx*qw
     # 2*qx*qz - 2*qy*qw	    2*qy*qz + 2*qx*qw	1 - 2*qx2 - 2*qy2
-    r1 = [D(1 - 2*y**2 - 2*z**2), D(2*x*y - 2*z*w), D(2*x*z + 2*y*w)]
-    r2 = [D(2*x*y + 2*z*w), D(1 - 2*x**2 - 2*z**2), D(2*y*z - 2*x*w)]
-    r3 = [D(2*x*z - 2*y*w), D(2*y*z + 2*x*w), D(1 - 2*x**2 - 2*y**2)]
+    r1 = [round(1 - 2*y**2 - 2*z**2, 12), round(2*x*y - 2*z*w, 12), round(2*x*z + 2*y*w, 12)]
+    r2 = [round(2*x*y + 2*z*w, 12), round(1 - 2*x**2 - 2*z**2, 12), round(2*y*z - 2*x*w, 12)]
+    r3 = [round(2*x*z - 2*y*w, 12), round(2*y*z + 2*x*w, 12), round(1 - 2*x**2 - 2*y**2, 12)]
 
     return [r1,r2,r3]
 
@@ -68,9 +65,9 @@ def euler_to_rotmat(yaw: float, #yaw in radian
     #   ch*ca	                -ch*sa*cb + sh*sb	            ch*sa*sb + sh*cb
     #   sa	                    ca*cb	                        -ca*sb
     #   -sh*ca	                sh*sa*cb + ch*sb	            -sh*sa*sb + ch*cb
-    r1 = [D(ch*ca),     D(-ch*sa*cb + sh*sb),   D(ch*sa*sb + sh*cb)]
-    r2 = [D(sa),        D(ca*cb),               D(-ca*sb)]
-    r3 = [D(-sh*ca),    D(sh*sa*cb + ch*sb),    D(-sh*sa*sb + ch*cb)]
+    r1 = [round(ch*ca, 12),     round(-ch*sa*cb + sh*sb, 12),   round(ch*sa*sb + sh*cb, 12)]
+    r2 = [round(sa, 12),        round(ca*cb, 12),               round(-ca*sb, 12)]
+    r3 = [round(-sh*ca, 12),    round(sh*sa*cb + ch*sb, 12),    round(-sh*sa*sb + ch*cb, 12)]
 
     return [r1,r2,r3]
 
